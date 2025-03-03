@@ -1,13 +1,9 @@
-<template>
-  
-</template>
-
-<script>
-export default {
-
-}
+<script setup>
+import LoginItem from '../components/LoginItem.vue'
 </script>
 
-<style>
-
-</style>
+<template>
+  <main>
+    <LoginItem/>
+  </main>
+</template>
