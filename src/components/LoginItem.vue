@@ -2,23 +2,26 @@
   <div class="login-container">
     <h2>Login</h2>
     <form @submit.prevent="handleLogin">
-        <div>
-            <label for="username">Brugernavn:</label>
-            <br>
-            <input type="text" id="username" v-model="username" required>
-        </div>
-        <div>
-            <label for="password">Adgangskode:</label>
-            <input type="password" id="password" v-model="password" required>
-        </div>
-        <button type="submit" :disabled="loading">{{ loading ? 'Logging in...' : 'Log ind' }}</button>
-        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+      <div>
+        <label for="username">Brugernavn:</label>
+        <input type="text" id="username" v-model="username" required />
+      </div>
+      <div>
+        <label for="password">Adgangskode:</label>
+        <input type="password" id="password" v-model="password" required />
+      </div>
+
+      <div class="button-container">
+        <button type="submit" class="login-btn" :disabled="loading">
+          {{ loading ? 'Logging in...' : 'Log ind' }}
+        </button>
+        <button type="button" class="register-btn" @click="goToRegister">
+          Opret en konto
+        </button>
+      </div>
+
+      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
     </form>
-    
-    <!-- Register Button to Navigate to Registration View -->
-    <div class="register-container">
-      <button @click="goToRegister">Opret en konto</button>
-    </div>
   </div>
 </template>
 
@@ -31,7 +34,7 @@ export default {
       username: '',
       password: '',
       errorMessage: '',
-      loading: false
+      loading: false,
     };
   },
   methods: {
@@ -40,15 +43,13 @@ export default {
       try {
         const response = await axios.post('http://localhost:5000/api/auth/login', {
           username: this.username,
-          password: this.password
+          password: this.password,
         });
-        
-        // Save token in localStorage
+
         localStorage.setItem('token', response.data.token);
         alert('Login successful!');
-        this.$router.push('/dashboard'); // Redirect to dashboard
+        this.$router.push('/dashboard'); 
       } catch (error) {
-        // Error handling
         if (error.response && error.response.status === 401) {
           this.errorMessage = 'Ugyldigt brugernavn eller adgangskode.';
         } else {
@@ -59,44 +60,71 @@ export default {
       }
     },
     goToRegister() {
-      // Navigate to the Register page
       this.$router.push('/register');
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
-.login-container {
-  max-width: 300px;
-  margin: auto;
+/* Ensure html and body take up the full height */
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0; /* Optional background color */
+}
+
+/* The auth-container is now centered on the page */
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;  /* Set a max width for the box */
+  margin: 20px;
   padding: 20px;
+  background: white;
+  border-radius: 10px;
   border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Input styling */
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
   border-radius: 5px;
-  background: #f9f9f9;
+  border: 1px solid #ccc;
 }
-.error {
-  color: red;
-  font-size: 14px;
-}
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-.register-container {
-  text-align: center;
-  margin-top: 20px;
-}
-.register-container button {
+
+/* Button styling */
+button {
+  width: 100%;
+  padding: 10px;
   background-color: #4CAF50;
   color: white;
-  padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
-.register-container button:hover {
+
+button:hover {
   background-color: #45a049;
 }
-</style>
 
+/* Adjust paragraph for toggling forms */
+p {
+  text-align: center;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+form div {
+  margin-bottom: 10px;
+}
+</style>
