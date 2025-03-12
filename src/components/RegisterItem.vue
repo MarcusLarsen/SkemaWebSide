@@ -1,81 +1,85 @@
 <template>
   <div class="auth-container">
-    <h2 v-if="isLogin">Login</h2>
-    <h2 v-else>Register</h2>
+    <h2>Register</h2>
 
-    <form @submit.prevent="submitForm">
+    <form @submit.prevent="register">
+      <div>
+        <label for="userName">Username</label>
+        <input type="text" v-model="username" required />
+      </div>
+
+      <div>
+        <label for="fullName">Full Name</label>
+        <input type="text" v-model="fullName" required />
+      </div>
+
       <div>
         <label for="email">Email</label>
         <input type="email" v-model="email" required />
       </div>
+
       <div>
         <label for="password">Password</label>
         <input type="password" v-model="password" required />
       </div>
-      <div v-if="!isLogin">
+
+      <div>
         <label for="confirmPassword">Confirm Password</label>
         <input type="password" v-model="confirmPassword" required />
       </div>
 
-      <button type="submit">{{ isLogin ? 'Login' : 'Register' }}</button>
+      <button type="submit">Register</button>
     </form>
 
-    <p @click="toggleForm">{{ isLogin ? 'Create an account' : 'Already have an account? Login' }}</p>
+    <p @click="goToLogin">Already have an account? Login</p>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       email: '',
+      username: '',
+      fullName: '',  // Added fullName
       password: '',
       confirmPassword: '',
-      isLogin: true,
+      isLogin: false,
+      errorMessage: '',
     };
   },
   methods: {
-    toggleForm() {
-      this.isLogin = !this.isLogin;
-    },
-    submitForm() {
-      if (!this.isLogin && this.password !== this.confirmPassword) {
-        alert('Passwords do not match!');
+    async register() {
+      if (this.password !== this.confirmPassword) {
+        this.errorMessage = 'Passwords do not match!';
         return;
       }
 
-      const payload = {
-        email: this.email,
-        password: this.password,
-      };
+      try {
+        // Send the API request with the necessary data
+        const response = await axios.post('https://localhost:7140/api/Auth/register', {
+          userName: this.username,
+          email: this.email,
+          fullName: this.fullName,  // Include fullName in the request
+          password: this.password,
+        });
 
-      if (this.isLogin) {
-        this.login(payload);
-      } else {
-        this.register(payload);
+        alert(response.data.message);
+        this.isLogin = true; // Switch to login mode after registration
+      } catch (error) {
+        this.errorMessage = error.response?.data?.message || 'Error during registration';
       }
     },
-    async login(payload) {
-      console.log('Logging in:', payload);
-    },
-    async register(payload) {
-      console.log('Registering user:', payload);
+    goToLogin() {
+      this.$router.push('/login'); 
     },
   },
 };
 </script>
 
 <style scoped>
-/* Ensure the html and body fill the full height */
-html, body {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f0f0f0; /* Optional background color */
-}
-
 .auth-container {
   display: flex;
   flex-direction: column;
@@ -91,16 +95,22 @@ html, body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+form {
+  width: 100%;
+}
+
 form div {
+  width: 100%;
   margin-bottom: 10px;
 }
 
 input {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   margin-top: 5px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 button {
@@ -111,6 +121,7 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 button:hover {
