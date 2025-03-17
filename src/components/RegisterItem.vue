@@ -59,7 +59,7 @@ export default {
 
       try {
         // Send the API request with the necessary data
-        const response = await axios.post('https://localhost:7140/api/Auth/register', {
+        const response = await axios.post('http://localhost:5255/api/Auth/register', {
           userName: this.username,
           email: this.email,
           fullName: this.fullName,  // Include fullName in the request

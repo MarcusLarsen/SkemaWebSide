@@ -65,7 +65,7 @@ export default {
       this.errorMessage = '';
 
       try {
-        const response = await axios.post('https://localhost:7140/api/Auth/login', {
+        const response = await axios.post('http://localhost:5255/api/Auth/Login', {
           userName: this.username,  
           password: this.password,
         });
